@@ -1,3 +1,11 @@
+"""
+Derives the coefficients for an optimal half-band polyphase IIR filter with two paths
+of allpass filters and provides some basic metrics on the filter's response. The
+resulting set of coefficients is independent of sample rate.
+
+Algorithm from Valenzuela, R. A. and Constantinides, A. G. 1983, "Digital signal
+processing schemes for efficient interpolation and decimation."
+"""
 import numpy
 
 
