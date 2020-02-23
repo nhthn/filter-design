@@ -10,7 +10,9 @@ import numpy.polynomial.polynomial as poly
 
 
 class PhaseDifferenceNetwork:
-    def __init__(self, poles_a, poles_b, min_frequency, max_frequency, error_in_degrees):
+    def __init__(
+        self, poles_a, poles_b, min_frequency, max_frequency, error_in_degrees
+    ):
         self.poles_a = poles_a
         self.poles_b = poles_b
         self.allpass_count = len(self.poles_a) + len(self.poles_b)
@@ -30,6 +32,7 @@ class PhaseDifferenceNetwork:
         Note that the reference uses the "break frequency" w_b = -p, which means
         we have a sign flip relative to them.
         """
+
         def phase(w, a):
             return numpy.pi + 2 * numpy.arctan(w / a)
 
@@ -58,7 +61,7 @@ class PhaseDifferenceNetwork:
         plt.title(f"{self.allpass_count}-pole 90-degree phase-difference network")
         plt.xlabel("Angular frequency (radians/sec)")
         plt.ylabel("Phase (deg.)")
-        #plt.ylim(-180, 180)
+        # plt.ylim(-180, 180)
         w = numpy.geomspace(1, 100e3, 2000, endpoint=False)
         phase_a, phase_b = self.phase(w)
         phase_difference = phase_a - phase_b
@@ -105,7 +108,10 @@ class PhaseDifferenceNetwork:
         print()
 
         average_group_delay = self.get_average_group_delay()
-        print(f"Average group delay over specified bandwidth: {average_group_delay * 1e3:.4}ms")
+        print(
+            f"Average group delay over specified bandwidth: {average_group_delay * 1e3:.4}ms"
+        )
+
 
 def design_weaver_method(min_frequency, max_frequency, n):
     k_prime = min_frequency / max_frequency
@@ -123,11 +129,13 @@ def design_weaver_method(min_frequency, max_frequency, n):
     phi_a = numpy.pi / (4 * n) * (4 * r_a - 3)
     phi_b = numpy.pi / (4 * n) * (4 * r_b - 1)
     phi_a_prime = numpy.arctan(
-        (q ** 2 - q ** 6) * numpy.sin(4 * phi_a)
+        (q ** 2 - q ** 6)
+        * numpy.sin(4 * phi_a)
         / (1 + (q ** 2 + q ** 6) * numpy.cos(4 * phi_a))
     )
     phi_b_prime = numpy.arctan(
-        (q ** 2 - q ** 6) * numpy.sin(4 * phi_b)
+        (q ** 2 - q ** 6)
+        * numpy.sin(4 * phi_b)
         / (1 + (q ** 2 + q ** 6) * numpy.cos(4 * phi_b))
     )
     poles_a = numpy.tan(phi_a - phi_a_prime) / numpy.sqrt(k_prime)
@@ -136,12 +144,8 @@ def design_weaver_method(min_frequency, max_frequency, n):
     return poles_a, poles_b
 
 
-def design_weaver_method_2(
-    min_frequency,
-    max_frequency,
-    *,
-    n=None,
-    max_error_in_degrees=None
+def design_weaver_method(
+    min_frequency, max_frequency, *, n=None, max_error_in_degrees=None
 ):
     k_prime = min_frequency / max_frequency
     k = numpy.sqrt(1 - k_prime * k_prime)
@@ -154,7 +158,9 @@ def design_weaver_method_2(
     if n is None and max_error_in_degrees is None:
         raise TypeError("Please specify either 'n' or 'max_error_in_degrees'.")
     elif n is not None and max_error_in_degrees is not None:
-        raise TypeError("Both 'n' and 'max_error_in_degrees' are specified. You can only specify one.")
+        raise TypeError(
+            "Both 'n' and 'max_error_in_degrees' are specified. You can only specify one."
+        )
     elif n is not None and max_error_in_degrees is None:
         # All OK.
         pass
@@ -165,16 +171,22 @@ def design_weaver_method_2(
     r = numpy.arange(1, n + 1)
     phi = numpy.pi / (4 * n) * (2 * r - 1)
     phi_prime = numpy.arctan(
-        (q ** 2 - q ** 6) * numpy.sin(4 * phi)
+        (q ** 2 - q ** 6)
+        * numpy.sin(4 * phi)
         / (1 + (q ** 2 + q ** 6) * numpy.cos(4 * phi))
     )
-    poles = -2 * numpy.pi * min_frequency * numpy.tan(phi - phi_prime) / numpy.sqrt(k_prime)
+    poles = (
+        -2 * numpy.pi * min_frequency * numpy.tan(phi - phi_prime) / numpy.sqrt(k_prime)
+    )
     poles_a = poles[0::2]
     poles_b = poles[1::2]
 
-    return PhaseDifferenceNetwork(poles_a, poles_b, min_frequency, max_frequency, error_in_degrees)
+    return PhaseDifferenceNetwork(
+        poles_a, poles_b, min_frequency, max_frequency, error_in_degrees
+    )
+
 
 if __name__ == "__main__":
-    filter_ = design_weaver_method_2(20, 20000, n=12)
+    filter_ = design_weaver_method(20, 20000, n=12)
     filter_.print()
     filter_.plot()
