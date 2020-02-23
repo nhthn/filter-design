@@ -1,7 +1,7 @@
 import numpy
 
 
-class Filter:
+class HalfbandPolyphaseIIRFilter:
 
     def __init__(self, coefficients, design_specific_info=None):
         self.coefficients = coefficients
@@ -145,7 +145,7 @@ def design_optimal_halfband(
     a_prime = numpy.sqrt((1 - w * w * k) * (1 - w * w / k)) / (1 + w * w)
     coefficients = (1 - a_prime) / (1 + a_prime)
 
-    return Filter([coefficients[0::2], coefficients[1::2]], {
+    return HalfbandPolyphaseIIRFilter([coefficients[0::2], coefficients[1::2]], {
         "type": "optimal halfband",
         "attenuation_db": 20 * numpy.log10(attenuation),
         "passband_ripple_db": 20 * numpy.log10(1 + passband_ripple),
@@ -153,6 +153,6 @@ def design_optimal_halfband(
 
 
 if __name__ == "__main__":
-    the_filter = design_optimal_halfband(0.01, -100)
+    the_filter = design_optimal_halfband(0.15, -90)
     the_filter.print()
     the_filter.plot()
