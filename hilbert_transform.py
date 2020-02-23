@@ -18,24 +18,6 @@ class PhaseDifferenceNetwork:
         self.max_frequency = float(max_frequency)
         self.error_in_degrees = error_in_degrees
 
-    def transfer_function(self, frequencies):
-        """Compute the transfer function at a given angular frequency.
-        You can also pass in a NumPy array.
-        """
-        s = frequencies * 1j
-
-        def allpass(s, a):
-            return (s - a) / (s + a)
-
-        H_a = 1
-        for pole in self.poles_a:
-            H_a *= allpass(s, pole)
-        H_b = 1
-        for pole in self.poles_b:
-            H_b *= allpass(s, pole)
-
-        return (H_a, H_b)
-
     def phase(self, frequencies):
         """Compute the unwrapped phase at a given frequency. Avoids numerical
         unwrapping by using an analytical formula for the phase contribution of
@@ -46,7 +28,7 @@ class PhaseDifferenceNetwork:
 
         See https://ccrma.stanford.edu/realsimple/DelayVar/Phasing_First_Order_Allpass_Filters.html.
         Note that the reference uses the "break frequency" w_b = -p, which means
-        we have a sign flip relative to the reference.
+        we have a sign flip relative to them.
         """
         def phase(w, a):
             return numpy.pi + 2 * numpy.arctan(w / a)
@@ -97,6 +79,9 @@ class PhaseDifferenceNetwork:
         f1 = min angular frequency
         f2 = max angular frequency
         average group delay = -(phase_response(f2) - phase_response(f1)) / (f2 - f1)
+
+        The group delay is in seconds, or at least I think so. (If you walk through what
+        happens if H = e^(sT), you get a group delay of T.)
         """
         endpoints = numpy.array([self.min_frequency, self.max_frequency])
         # The endpoints are here specified in frequency. When computing this denominator,
