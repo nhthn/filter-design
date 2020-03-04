@@ -120,19 +120,19 @@ class PhaseDifferenceNetwork:
         axes.set_xscale("log")
         axes.set_xlim(1.0, 100e3)
         title_part_1 = f"{self.allpass_count}-pole 90-degree phase-difference network"
-        axes.set_xlabel("Angular frequency (radians/sec)")
+        axes.set_xlabel("Frequency (Hz)")
         axes.set_ylabel("Phase (deg.)")
         # figure.ylim(-180, 180)
-        w = numpy.geomspace(1, 100e3, 2000, endpoint=False)
-        phase_a, phase_b = self.phase(w)
+        frequency = numpy.geomspace(1, 100e3, 2000, endpoint=False)
+        phase_a, phase_b = self.phase(frequency)
         if mode == "phase_responses":
             figure.suptitle(f"{title_part_1}, phase responses")
-            axes.plot(w, numpy.rad2deg(phase_a), label="Allpass A phase response")
-            axes.plot(w, numpy.rad2deg(phase_b), label="Allpass B phase response")
+            axes.plot(frequency, numpy.rad2deg(phase_a), label="Allpass A phase response")
+            axes.plot(frequency, numpy.rad2deg(phase_b), label="Allpass B phase response")
         elif mode == "phase_difference":
             figure.suptitle(f"{title_part_1}, phase difference")
             phase_difference = phase_a - phase_b
-            axes.plot(w, numpy.rad2deg(phase_difference))
+            axes.plot(frequency, numpy.rad2deg(phase_difference))
         else:
             raise ValueError(f"Invalid mode: {mode}")
         return figure
@@ -188,6 +188,6 @@ if __name__ == "__main__":
     filter_ = PhaseDifferenceNetwork.design(20.0, 20000.0, n=12)
     filter_.print_info()
     figure = filter_.plot("phase_responses")
-    figure.savefig("frequency_shifter_phase_response.png")
+    figure.savefig("frequency_shifter_phase_responses.png")
     figure = filter_.plot("phase_difference")
     figure.savefig("frequency_shifter_phase_difference.png")
